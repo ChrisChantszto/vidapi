@@ -11,7 +11,7 @@ import os
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000",  # replace with the origin of your frontend
+    "https://videodownload-frontend.onrender.com/",  # replace with the origin of your frontend
 ]
 
 app.add_middleware(
@@ -27,10 +27,21 @@ class Video(BaseModel):
     filename: str
 
 
+def get_unique_filename(filename):
+    counter = 1
+    base_filename, extension = os.path.splitext(filename)
+    unique_filename = filename
+
+    while os.path.isfile(unique_filename):
+        unique_filename = f"{base_filename}({counter}){extension}"
+        counter += 1
+
+    return unique_filename
+
 @app.post("/api/download")
 async def download_video(video: Video):
     url = video.url
-    filename = video.filename
+    filename = get_unique_filename(video.filename)
 
     url += '.json'
     response = requests.get(url, headers={'User-agent': 'Mozilla/5.0'})
