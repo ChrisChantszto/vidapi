@@ -11,12 +11,12 @@ import os
 app = FastAPI()
 
 origins = [
-    "https://videodownload-frontend.onrender.com/",  # replace with the origin of your frontend
+    "https://videodownload-frontend.onrender.com",  # replace with the origin of your frontend
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
