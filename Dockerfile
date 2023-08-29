@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 80
 
 # Run main)api.py when the container launches
-CMD ["uvicorn", "main_api:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "main_api:app", "--host", "0.0.0.0"]
