@@ -1,7 +1,5 @@
-from fastapi import FastAPI, HTTPException
-
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import requests
 import json
@@ -10,22 +8,9 @@ import os
 
 app = FastAPI()
 
-origins = [
-    "https://videodownload-frontend.onrender.com",  # replace with the origin of your frontend
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 class Video(BaseModel):
     url: str
     filename: str
-
 
 def get_unique_filename(filename):
     counter = 1
@@ -37,6 +22,15 @@ def get_unique_filename(filename):
         counter += 1
 
     return unique_filename
+
+@app.middleware("http")
+async def add_cors_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["Access-Control-Allow-Origin"] = "https://videodownload-frontend.onrender.com"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 
 @app.post("/api/download")
 async def download_video(video: Video):
